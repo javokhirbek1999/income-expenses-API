@@ -45,7 +45,7 @@ class RegisterView(generics.GenericAPIView):
         data = {'email_body':email_body, 'to_email':user.email, 'email_subject':'Verify your account'}
 
         Util.send_mail(data)
-
+        
         return Response(user_data, status=status.HTTP_201_CREATED)
 
 class VerifyEmail(views.APIView):
@@ -56,6 +56,7 @@ class VerifyEmail(views.APIView):
 
     @swagger_auto_schema(manual_parameters=[token_param_config])
     def get(self, request):
+    
         token = request.GET.get('token')
         print(token)
         try:
