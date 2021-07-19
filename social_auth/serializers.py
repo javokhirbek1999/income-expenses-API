@@ -1,6 +1,6 @@
 import os
 from rest_framework import serializers
-from . import google
+from .google import Google
 from .register import register_social_user
 from rest_framework.exceptions import AuthenticationFailed
 
@@ -9,7 +9,7 @@ class GoogleSocialAuthSerializer(serializers.Serializer):
 	auth_token = serializers.CharField()
 
 	def validate_auth_token(self, auth_token):
-		user_data = google.Google.validate(auth_token)
+		user_data = Google.validate(auth_token)
 
 		try:
 			user_data['sub']
