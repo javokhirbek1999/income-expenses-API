@@ -32,6 +32,7 @@ class UserManager(BaseUserManager):
 
         return user
 
+AUTH_PROVIDER = {'gooogle':'google','facebook':'facebook','twitter':'twitter','email':'email'}
 
 class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=255, unique=True, db_index=True)
@@ -41,6 +42,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_verified = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
+    auth_provider = models.CharField(max_length=255, blank=False, null=False, default=AUTH_PROVIDER.get('email'))
 
     objects = UserManager()
 
