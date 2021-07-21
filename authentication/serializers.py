@@ -1,9 +1,12 @@
 from django.db import models
 from django.contrib.auth import authenticate
-
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.encoding import smart_str,force_str,smart_bytes, DjangoUnicodeDecodeError
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 
 from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
+from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
 from .models import User
 
@@ -79,6 +82,8 @@ class LoginAPISerializer(serializers.ModelSerializer):
 class RequestPasswordResetEmailSerializer(serializers.Serializer):
     email = serializers.EmailField(min_length=6)
 
+    redirect_url = serializers.CharField(max_length=500, required=False)
+
     class Meta:
         fields = ['email']
 
@@ -109,3 +114,23 @@ class SetNewPasswordSerializer(serializers.Serializer):
         except Exception as e:
             raise AuthenticationFailed('The reset token link is invalid',401)
         return super().validate(attrs)
+
+
+class LogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField()
+
+    default_error_messages = {
+        'bad_token':('Token is invalid or expired')
+    }
+
+    def validate(self,attrs):
+        self.token = attrs['refresh']
+
+        return attrs
+
+
+    def save(self,**kwargs):
+        try:
+            RefreshToken(self.token).blacklist()
+        except TokenError:
+            self.fail('bad_token')
