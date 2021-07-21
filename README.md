@@ -1,1 +1,1 @@
-# income-expenses-API
+# Income and expenses API
